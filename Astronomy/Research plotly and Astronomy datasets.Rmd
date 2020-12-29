@@ -14,6 +14,8 @@ gal = read.table(r, header = TRUE)
 f = "https://astrostatistics.psu.edu/MSMA/datasets/NGC4472_profile.dat"
 gal2 = read.table(f, header = TRUE) 
 
+combo <- read.csv("COMBO17.csv")
+
 
 test <- read.csv("SDSS_test.csv")
 fireball <- read.csv("cneos_fireball_data.csv")
@@ -65,8 +67,47 @@ fig
 ```
 
 
+
+
+**The Bubble Plot below is a vital ploy in understanding how Galaxies are observed through data. Here using plotly, we hage created an interactive bubble plot. our X is the Rmag which is the total red band magnitude, which is the inverted logarithmic measure of the galaxies brightness. The y is the difference between total and aperture magnitude in the R band. In other words, it is a rough measure of the size of the galaxy. the number below the coordinates of each bubble is the obect number ie the number the galaxy is classified as**
+
+**The variable that effects the size of each bubble is mumax which is the central surface brightness of each galaxy**
+
+**It is noted that the difference between R mag and mu_mx should be also be an indicator of the galaxy size**
+
 ```{r}
 
 
+
+
+red <- plot_ly(combo, x = ~Rmag, y = ~ApDRmag, text = ~Nr, type = "scatter", mode = 'markers',
+               marker = list(size = ~mumax, opacity = 0.5))
+red <- red %>% layout(title = "Magnitude of Logarithmic Brightness Against size of Galaxy",
+                      xaxis = list(showgrid = FALSE),
+                      yaxis = list(showgrid = FALSE))
+
+red
+
+
+
 ```
+
+
+
+**Here we created a new variable where we took the difference in Rmag and mumax as this is also an indicator of a size of each galaxy recorded. we used this new variable as our y to compare and see how reliable it is estimating the size along with x still remaining as our RMag. For the most part, both plots seem to be similar, with a few remaining outliers in the second plot that do not occur in the first plot** 
+```{r}
+library(dplyr)
+
+combo_n = mutate(combo, Diff_R_Mu = Rmag - mumax )
+
+red2 <- plot_ly(combo_n, x = ~Rmag, y = ~Diff_R_Mu, text = ~Nr, type = "scatter", mode = 'markers', color = "red",marker = list(size = ~mumax, opacity = 0.5))
+
+red2 <- red2 %>% layout(title = "Magnitude of Brightness against Estimated Size",
+                        xaxis = list(showgrid = FALSE),
+                        yaxis = list(showgird = FALSE))
+red2
+
+```
+
+
 
