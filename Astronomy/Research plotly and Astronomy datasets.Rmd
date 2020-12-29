@@ -1,0 +1,72 @@
+---
+title: "checker"
+author: "Brandon Pazmino"
+date: "12/28/2020"
+output: html_document
+---
+
+```{r echo = FALSE}
+stars <- read.csv("SDSS_stars.csv")
+p = "https://astrostatistics.psu.edu/MSMA/datasets/asteroid_dens.dat"
+sp = read.table(p, header = TRUE)
+r = "https://astrostatistics.psu.edu/MSMA/datasets/NGC4406_profile.dat"
+gal = read.table(r, header = TRUE) 
+f = "https://astrostatistics.psu.edu/MSMA/datasets/NGC4472_profile.dat"
+gal2 = read.table(f, header = TRUE) 
+
+
+test <- read.csv("SDSS_test.csv")
+fireball <- read.csv("cneos_fireball_data.csv")
+library(ggplot2)
+library(highcharter)
+library(magrittr)
+meteor <- read.csv("Meteorite_Landings.csv")
+library(plotly)
+```
+
+```{r}
+
+p <- ggplot(sp, aes(Err, Dens, color = Asteroid)) + 
+  geom_point() + 
+  theme_bw()
+ggplotly(p)
+```
+
+```{r}
+library(highcharter)
+hchart(sp, "point", hcaes(x = Err, y = Dens, group = Asteroid))
+
+```
+```{r}
+hchart(sp, "line", hcaes(x = Err, y = Dens, group = Asteroid))
+
+```
+```{r}
+#NGC4472 Galaxy 
+
+hc<- hchart(gal2, type = "scatter", hcaes(radius,surf_mag),
+            name = "Radius and Surface Mag of NGC4472 Galaxy",
+            showInLegend = TRUE
+)
+
+hc
+
+```
+```{r}
+
+
+fig <- plot_ly(fireball, x = ~Altitude_km, y = ~Velocity_km_s, z = ~Total_Radiated_Energy, marker = list(color = "blue"), showscale = TRUE )
+
+fif <- fig %>% layout(scene = list(xaxis = list(title = "Altitude Km"),
+                                   yaxis = list(title = "Velocity km/s"),
+                                   zaxis = list(title = "Total Radiated Energy (J)")))
+
+fig
+```
+
+
+```{r}
+
+
+```
+
