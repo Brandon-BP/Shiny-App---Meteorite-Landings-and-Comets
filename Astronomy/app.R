@@ -21,14 +21,25 @@ library(rnaturalearth)
 library(rworldmap)
 library(Cairo)
 library(RColorBrewer)
+library(plotly)
+library(highcharter)
+library(magrittr)
 
 
 
 # Imported Datasets
 
-fireball <- read_csv("cneos_fireball_data.csv")
-meteor <- read_csv("Meteorite_Landings.csv")
-
+fireball <- read.csv("cneos_fireball_data.csv")
+meteor <- read.csv("Meteorite_Landings.csv")
+stars <- read.csv("SDSS_stars.csv")
+test <- read.csv("SDSS_test.csv")
+wd <- read.csv("SDSS_wd.csv")
+p = "https://astrostatistics.psu.edu/MSMA/datasets/asteroid_dens.dat"
+sp = read.table(p, header = TRUE) 
+r = "https://astrostatistics.psu.edu/MSMA/datasets/NGC4406_profile.dat"
+gal = read.table(r, header = TRUE) 
+f = "https://astrostatistics.psu.edu/MSMA/datasets/NGC4472_profile.dat"
+gal2 = read.table(f, header = TRUE) 
 
 
 # Define UI for application that draws a histogram
@@ -68,7 +79,22 @@ ui <- navbarPage("Astronomy Research App", theme = shinytheme("flatly"),
                         
                ),
                
-               tabPanel("Bolide-Fireballs", tags$head(tags$style(HTML(".tab-content {margin: 20px;}"))))
+               
+               
+      
+               tags$img(src = "http://objekty.astro.cz/obr/objekty/ngc/n4406.jpg", height = 400, width = 600),
+               h1("NGC4406 Data Scatter Plot"),
+               sliderInput("myslider","Value Specification Range", min = 1 ,max = 25, value = 10),
+               plotlyOutput("myplot")
+               
+               
+           
+               
+               
+              
+                        
+
+               
               
                
                
@@ -79,10 +105,21 @@ ui <- navbarPage("Astronomy Research App", theme = shinytheme("flatly"),
 )
 
 
+
 server <- function(input, output,session) {
+  dat <- reactive(gal[1:input$myslider,])
   
+  output$myplot <- renderPlotly({
+    p <- ggplot(dat(), aes(radius, surf_mag)) + geom_point(color = "red")
+    p <- ggplotly(p)
+    p
+    
+  })
   
+
+
 }
 
 shinyApp(ui = ui, server = server)
-                        
+
+
