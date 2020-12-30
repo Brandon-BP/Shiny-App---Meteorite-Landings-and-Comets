@@ -6,6 +6,8 @@ output: html_document
 ---
 
 ```{r echo = FALSE}
+
+
 stars <- read.csv("SDSS_stars.csv")
 p = "https://astrostatistics.psu.edu/MSMA/datasets/asteroid_dens.dat"
 sp = read.table(p, header = TRUE)
@@ -24,6 +26,7 @@ library(highcharter)
 library(magrittr)
 meteor <- read.csv("Meteorite_Landings.csv")
 library(plotly)
+library(quantmod)
 ```
 
 ```{r}
@@ -64,6 +67,7 @@ fif <- fig %>% layout(scene = list(xaxis = list(title = "Altitude Km"),
                                    zaxis = list(title = "Total Radiated Energy (J)")))
 
 fig
+
 ```
 
 
@@ -109,5 +113,114 @@ red2
 
 ```
 
+```{r}
+ph <- plot_ly(combo_n, x = ~Rmag)
+ph <- ph %>% add_lines(y = ~ApDRmag, name = "Difference In Total and Aperture Magnitude in R Band (Estimate of Galaxy Size)")
+ph <- ph %>% add_lines(y = ~Diff_R_Mu, name = "Difference in R Magnitude Redshift Band and Central Surface Brightness (Estimated Size)") 
+ph <- ph %>% layout(
+  title = "Mesauring Sizes of Galaxy In Association to Redshift Band",
+  xaxis = list(
+    rangeselector = list(
+      
+    )
+  ),
+  rangeslider(combo_n, start = 16, end = 27)
+  
+)
 
+ph
+
+
+  
+```
+
+
+
+```{r}
+o = "https://astrostatistics.psu.edu/datasets/censor.dat"
+p = read.table(o, header = TRUE)
+p
+```
+
+
+**The Plot below is obtained from a Dataset from stellar Astronomy. The dataset contains 39 known stars to host plants and 29 in a control sample. here is an interactive 3D chat that includes x as the stellar surface temperature of each start, y as the amount of beryllium, and z as the amount of lithium in each star. From the data, we see that the amount of beryllium in each star is correlated to the surface temperature of each star as this also gives us a broader idea of the mass in each start**
+
+**Type 1 = Planet Hosting Star**
+**Type 2 = Control Sample**
+
+
+**Lets go further and assess this correlation**
+
+```{r}
+start_3d <- plot_ly(p, x = ~Teff, y = ~logN_Be, z = ~logN_Li,
+                    color = ~Type,  colors = c('#BF382A', '#0C4B8E'))
+start_3d <-start_3d %>% add_markers()
+
+start_3d <- start_3d %>% layout(scene = list(xaxis = list(title = "Stellar Surface Temperature"),yaxis = list(title = "Logarithmic of Beryllium In Each Star"),
+                                   zaxis = list(title = "Logarithmic of Lithium"))
+)
+
+start_3d
+
+                      
+```
+
+```{r}
+new <- plot_ly(data = p, x = ~Teff, y = ~logN_Be, type = "scatter",
+               mode = 'markers', symbol = ~Type, symbols = c("circle", "x"),
+               color = I("blue"), marker = list(size = 10))
+new <- new %>% layout(title = "Stellar Surface Temperature Against Logarthmic Be" )
+
+new
+```
+
+
+**Histogram of Stellar Surface Temperature**
+
+```{r}
+his <- plot_ly(data = p,alpha = 0.6)
+his <- his %>% add_histogram(x = ~Teff)
+his <- his %>% add_histogram(x = ~Teff)
+his <- his %>% layout(barmode = "overlay")
+his <- his %>% layout(title = "Histogram of Stellar Surface Temperature")
+
+his
+
+```
+
+```{r}
+line <- plot_ly(p, x = ~Teff, y = ~logN_Be, z =~logN_Li, type = "scatter3d", mode = "lines",
+                opacity = 1, line = list(width = 6, color = ~Type, reverscale = FALSE))
+
+line <- line %>% layout(title = " 3D Line Plot of Planetary Hosting Stars")
+
+line
+```
+
+
+```{r}
+sp_ice = subset(sp, Dens > 1 & Dens < 2)
+sp_ice
+
+
+
+```
+
+```{r}
+box_q <- plot_ly(sp_ice, x = ~Asteroid, y = ~Dens,
+                 type = "bar")
+box_q <- box_q %>% layout(title = "Densities of Asteroids less than 2 grams (solid Ice Material")
+box_q
+
+
+```
+```{r}
+sp_rocky = subset(sp, Dens >= 3)
+
+box_t <- plot_ly(sp_rocky, x = ~Asteroid, y = ~Dens,
+                 type = "bar")
+box_t <- box_t %>% layout(title = "Densities of Asteroids less than greater or equal to 3,(Rocky Material)")
+box_t
+
+```
 
